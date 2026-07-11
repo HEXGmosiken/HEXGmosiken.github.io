@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.28.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="报告人： 留灵珍 25051505SSH服务配置与远程管理实验报告 一、实验目的本次实验旨在掌握Linux系统远程管理的基本方法，通过安装和配置OpenSSH服务，实现基于SSH协议的安全远程登录，了解多机开发环境下的账户管理方法，掌握使用SCP和rsync进行跨机文件传输与同步。实验重点包括SSH服务的安装与启动、SSH配置文件优化、基于密钥认证的免密登录配置，以及远程文件传输工具的使用，从而理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实验七 远程登录管理">
+<meta property="og:url" content="http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%B8%83-%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="报告人： 留灵珍 25051505SSH服务配置与远程管理实验报告 一、实验目的本次实验旨在掌握Linux系统远程管理的基本方法，通过安装和配置OpenSSH服务，实现基于SSH协议的安全远程登录，了解多机开发环境下的账户管理方法，掌握使用SCP和rsync进行跨机文件传输与同步。实验重点包括SSH服务的安装与启动、SSH配置文件优化、基于密钥认证的免密登录配置，以及远程文件传输工具的使用，从而理">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/1.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/1.2.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/1.3.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/2.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/3.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/4.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/5.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/6.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/6.2.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/6.3.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/7.1.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/7.2.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/7.3.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/7.4.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/7.5.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/7.6.png">
+<meta property="article:published_time" content="2026-07-09T01:44:25.000Z">
+<meta property="article:modified_time" content="2026-07-09T13:16:31.171Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C7/1.1.png">
+
+
+<link rel="canonical" href="http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%B8%83-%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%E7%AE%A1%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%B8%83-%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%E7%AE%A1%E7%90%86/","path":"2026/07/09/实验七-远程登录管理/","title":"实验七 远程登录管理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>实验七 远程登录管理 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%A5%E5%91%8A%E4%BA%BA%EF%BC%9A-%E7%95%99%E7%81%B5%E7%8F%8D-25051505"><span class="nav-number">1.</span> <span class="nav-text">报告人： 留灵珍 25051505</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SSH%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%BF%9C%E7%A8%8B%E7%AE%A1%E7%90%86%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A"><span class="nav-number"></span> <span class="nav-text">SSH服务配置与远程管理实验报告</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%9E%E9%AA%8C%E7%9B%AE%E7%9A%84"><span class="nav-number"></span> <span class="nav-text">一、实验目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="nav-number"></span> <span class="nav-text">二、实验环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%AF%A6%E7%BB%86%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number"></span> <span class="nav-text">三、详细操作步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9ASSH%E6%9C%8D%E5%8A%A1%E5%AE%89%E8%A3%85%E4%B8%8E%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">第一部分：SSH服务安装与基础配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%80%EF%BC%9A%E6%A3%80%E6%9F%A5SSH%E6%9C%8D%E5%8A%A1%E7%8A%B6%E6%80%81"><span class="nav-number">1.1.</span> <span class="nav-text">步骤一：检查SSH服务状态</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E%EF%BC%9A-systemctl-status-ssh-%E6%9F%A5%E7%9C%8BSSH%E6%9C%8D%E5%8A%A1%E5%BD%93%E5%89%8D%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81-%E8%8B%A5%E6%98%BE%E7%A4%BA-active-running-%E8%A1%A8%E7%A4%BA%E6%9C%8D%E5%8A%A1%E5%B7%B2%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C"><span class="nav-number"></span> <span class="nav-text">操作说明：- systemctl status ssh 查看SSH服务当前运行状态- 若显示 active (running) 表示服务已正常运行</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%8C%EF%BC%9A%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">0.1.</span> <span class="nav-text">步骤二：配置SSH服务器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number"></span> <span class="nav-text"></span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9ASSH%E5%AF%86%E9%92%A5%E8%AE%A4%E8%AF%81%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">第二部分：SSH密钥认证配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%89%EF%BC%9A%E7%94%9F%E6%88%90SSH%E5%AF%86%E9%92%A5%E5%AF%B9%EF%BC%88%E5%9C%A8node1%E4%B8%8A%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">步骤三：生成SSH密钥对（在node1上）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E5%BA%94%E5%8C%85%E5%90%AB%EF%BC%9A-id-ed25519%EF%BC%9A%E7%A7%81%E9%92%A5%E6%96%87%E4%BB%B6-id-ed25519-pub%EF%BC%9A%E5%85%AC%E9%92%A5%E6%96%87%E4%BB%B6"><span class="nav-number"></span> <span class="nav-text">输出应包含：- id_ed25519：私钥文件- id_ed25519.pub：公钥文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%9B%9B%EF%BC%9A%E5%B0%86%E5%85%AC%E9%92%A5%E5%A4%8D%E5%88%B6%E5%88%B0%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">0.1.</span> <span class="nav-text">步骤四：将公钥复制到远程服务器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9%EF%BC%9A-%E8%87%AA%E5%8A%A8%E5%B0%86%E5%85%AC%E9%92%A5%E8%BF%BD%E5%8A%A0%E5%88%B0%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84-ssh-authorized-keys-%E6%96%87%E4%BB%B6-%E8%87%AA%E5%8A%A8%E8%AE%BE%E7%BD%AE%E6%AD%A3%E7%A1%AE%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90-%E6%93%8D%E4%BD%9C%E7%AE%80%E5%8D%95%EF%BC%8C%E4%B8%8D%E6%98%93%E5%87%BA%E9%94%99"><span class="nav-number"></span> <span class="nav-text">优点：- 自动将公钥追加到远程服务器的 ~&#x2F;.ssh&#x2F;authorized_keys 文件- 自动设置正确的文件权限- 操作简单，不易出错</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%94%EF%BC%9A%E6%B5%8B%E8%AF%95%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95"><span class="nav-number">0.1.</span> <span class="nav-text">步骤五：测试免密登录</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#-1"><span class="nav-number"></span> <span class="nav-text"></span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="nav-number">1.</span> <span class="nav-text">第三部分：文件传输</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%85%AD%EF%BC%9A%E4%BD%BF%E7%94%A8SCP%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">步骤六：使用SCP传输文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SCP%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%EF%BC%9A-r%EF%BC%9A%E9%80%92%E5%BD%92%E5%A4%8D%E5%88%B6%E7%9B%AE%E5%BD%95-C%EF%BC%9A%E5%90%AF%E7%94%A8%E5%8E%8B%E7%BC%A9%E4%BC%A0%E8%BE%93"><span class="nav-number"></span> <span class="nav-text">SCP常用参数：- -r：递归复制目录- -C：启用压缩传输</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%83%EF%BC%9A%E4%BD%BF%E7%94%A8rsync%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6"><span class="nav-number">0.1.</span> <span class="nav-text">步骤七：使用rsync同步文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number"></span> <span class="nav-text">四、实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93"><span class="nav-number"></span> <span class="nav-text">五、知识总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">SSH配置文件关键参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%B7%A5%E5%85%B7%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">文件传输工具选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH%E5%AF%86%E9%92%A5%E8%AE%A4%E8%AF%81%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">SSH密钥认证原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%87%BA%E7%8E%B0%E9%97%AE%E9%A2%98"><span class="nav-number"></span> <span class="nav-text">六、出现问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%EF%BC%9A%E5%85%AC%E9%92%A5%E6%97%A0%E6%B3%95%E5%A4%8D%E5%88%B6%E5%88%B0%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">问题一：公钥无法复制到远程服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C%EF%BC%9A%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E8%BF%87%E7%A8%8B%E4%B8%AD%E6%98%BE%E7%A4%BA%E6%96%87%E4%BB%B6%E4%B8%8D%E5%AD%98%E5%9C%A8"><span class="nav-number">2.</span> <span class="nav-text">问题二：文件传输过程中显示文件不存在</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%BF%83%E5%BE%97%E4%BD%93%E4%BC%9A"><span class="nav-number"></span> <span class="nav-text">七、心得体会</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E5%B1%82%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">技术层面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E6%94%BF%E5%B1%82%E9%9D%A2"><span class="nav-number">2.</span> <span class="nav-text">思政层面</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%B8%83-%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="实验七 远程登录管理 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          实验七 远程登录管理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2026-07-09 09:44:25 / Modified: 21:16:31" itemprop="dateCreated datePublished" datetime="2026-07-09T09:44:25+08:00">2026-07-09</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="报告人：-留灵珍-25051505"><a href="#报告人：-留灵珍-25051505" class="headerlink" title="报告人： 留灵珍 25051505"></a>报告人： 留灵珍 25051505</h3><h1 id="SSH服务配置与远程管理实验报告"><a href="#SSH服务配置与远程管理实验报告" class="headerlink" title="SSH服务配置与远程管理实验报告"></a>SSH服务配置与远程管理实验报告</h1><hr>
+<h2 id="一、实验目的"><a href="#一、实验目的" class="headerlink" title="一、实验目的"></a>一、实验目的</h2><p>本次实验旨在掌握Linux系统远程管理的基本方法，通过安装和配置OpenSSH服务，实现基于SSH协议的安全远程登录，了解多机开发环境下的账户管理方法，掌握使用SCP和rsync进行跨机文件传输与同步。实验重点包括SSH服务的安装与启动、SSH配置文件优化、基于密钥认证的免密登录配置，以及远程文件传输工具的使用，从而理解远程管理的安全机制和最佳实践。</p>
+<hr>
+<h2 id="二、实验环境"><a href="#二、实验环境" class="headerlink" title="二、实验环境"></a>二、实验环境</h2><ul>
+<li><strong>操作系统</strong>：Ubuntu Server 22.04 LTS</li>
+<li><strong>软件版本</strong>：OpenSSH 8.9p1（Ubuntu）</li>
+<li><strong>虚拟机配置</strong>：VirtualBox，内存2048MB，硬盘25GB</li>
+<li><strong>网络</strong>：Host-Only网络 + NAT</li>
+<li><strong>客户端</strong>：Windows 11</li>
+<li><strong>节点配置</strong>：<ul>
+<li>node1：192.168.56.101（源虚拟机）</li>
+<li>node2：192.168.56.102&#x2F;103（克隆虚拟机）</li>
+<li>用户名：ubuntu</li>
+<li>密码：111111</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="三、详细操作步骤"><a href="#三、详细操作步骤" class="headerlink" title="三、详细操作步骤"></a>三、详细操作步骤</h2><h3 id="第一部分：SSH服务安装与基础配置"><a href="#第一部分：SSH服务安装与基础配置" class="headerlink" title="第一部分：SSH服务安装与基础配置"></a>第一部分：SSH服务安装与基础配置</h3><h4 id="步骤一：检查SSH服务状态"><a href="#步骤一：检查SSH服务状态" class="headerlink" title="步骤一：检查SSH服务状态"></a>步骤一：检查SSH服务状态</h4><p>首先检查系统中是否已安装并运行SSH服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查服务状态</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl status ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如未安装，执行安装</span></span><br><span class="line"><span class="built_in">sudo</span> apt install openssh-server -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置开机自启</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> ssh</span><br></pre></td></tr></table></figure>
+
+<h2 id="操作说明：-systemctl-status-ssh-查看SSH服务当前运行状态-若显示-active-running-表示服务已正常运行"><a href="#操作说明：-systemctl-status-ssh-查看SSH服务当前运行状态-若显示-active-running-表示服务已正常运行" class="headerlink" title="操作说明：- systemctl status ssh 查看SSH服务当前运行状态- 若显示 active (running) 表示服务已正常运行"></a><strong>操作说明</strong>：<br>- <code>systemctl status ssh</code> 查看SSH服务当前运行状态<br>- 若显示 <code>active (running)</code> 表示服务已正常运行<br><img src="/images/%E5%AE%9E%E9%AA%8C7/1.1.png" alt="alt text"><br><img src="/images/%E5%AE%9E%E9%AA%8C7/1.2.png" alt="alt text"><br><img src="/images/%E5%AE%9E%E9%AA%8C7/1.3.png" alt="alt text"></h2><h4 id="步骤二：配置SSH服务器"><a href="#步骤二：配置SSH服务器" class="headerlink" title="步骤二：配置SSH服务器"></a>步骤二：配置SSH服务器</h4><p>编辑SSH主配置文件 <code>/etc/ssh/sshd_config</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nano /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键配置项</strong>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Port 22                    # 默认端口</span></span><br><span class="line">PermitRootLogin no           <span class="comment"># 禁止root直接登录</span></span><br><span class="line">PubkeyAuthentication yes     <span class="comment"># 允许公钥认证</span></span><br><span class="line">PasswordAuthentication yes   <span class="comment"># 允许密码认证</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置说明</strong>：</p>
+<ul>
+<li><strong>PermitRootLogin no</strong>：禁止root用户直接登录，防止暴力破解root密码</li>
+<li><strong>PubkeyAuthentication yes</strong>：启用公钥认证方式，是实现免密登录的基础</li>
+<li><strong>PasswordAuthentication yes</strong>：允许密码登录，配置完密钥认证后建议关闭</li>
+</ul>
+<p>修改完成后保存退出，重启SSH服务使配置生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart ssh</span><br></pre></td></tr></table></figure>
+<h2 id=""><a href="#" class="headerlink" title=""></a><img src="/images/%E5%AE%9E%E9%AA%8C7/2.1.png" alt="alt text"></h2><h3 id="第二部分：SSH密钥认证配置"><a href="#第二部分：SSH密钥认证配置" class="headerlink" title="第二部分：SSH密钥认证配置"></a>第二部分：SSH密钥认证配置</h3><h4 id="步骤三：生成SSH密钥对（在node1上）"><a href="#步骤三：生成SSH密钥对（在node1上）" class="headerlink" title="步骤三：生成SSH密钥对（在node1上）"></a>步骤三：生成SSH密钥对（在node1上）</h4><p>使用ed25519算法生成密钥对</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -C <span class="string">&quot;你的邮箱@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>生成过程说明</strong>：</p>
+<ul>
+<li>按回车使用默认保存路径 <code>~/.ssh/</code></li>
+<li>可设置密钥密码（passphrase），也可留空实现完全免密</li>
+</ul>
+<p>生成后查看密钥文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> ~/.ssh/</span><br></pre></td></tr></table></figure>
+
+<h2 id="输出应包含：-id-ed25519：私钥文件-id-ed25519-pub：公钥文件"><a href="#输出应包含：-id-ed25519：私钥文件-id-ed25519-pub：公钥文件" class="headerlink" title="输出应包含：- id_ed25519：私钥文件- id_ed25519.pub：公钥文件"></a>输出应包含：<br>- <code>id_ed25519</code>：私钥文件<br>- <code>id_ed25519.pub</code>：公钥文件<br><img src="/images/%E5%AE%9E%E9%AA%8C7/3.1.png" alt="alt text"></h2><h4 id="步骤四：将公钥复制到远程服务器"><a href="#步骤四：将公钥复制到远程服务器" class="headerlink" title="步骤四：将公钥复制到远程服务器"></a>步骤四：将公钥复制到远程服务器</h4><p><strong>方法一（推荐）：使用 ssh-copy-id 自动配置</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id ubuntu@192.168.56.103</span><br></pre></td></tr></table></figure>
+
+<h2 id="优点：-自动将公钥追加到远程服务器的-ssh-authorized-keys-文件-自动设置正确的文件权限-操作简单，不易出错"><a href="#优点：-自动将公钥追加到远程服务器的-ssh-authorized-keys-文件-自动设置正确的文件权限-操作简单，不易出错" class="headerlink" title="优点：- 自动将公钥追加到远程服务器的 ~/.ssh/authorized_keys 文件- 自动设置正确的文件权限- 操作简单，不易出错"></a><strong>优点</strong>：<br>- 自动将公钥追加到远程服务器的 <code>~/.ssh/authorized_keys</code> 文件<br>- 自动设置正确的文件权限<br>- 操作简单，不易出错<br><img src="/images/%E5%AE%9E%E9%AA%8C7/4.1.png" alt="alt text"></h2><p><strong>方法二（手动）：手动复制公钥</strong></p>
+<ol>
+<li>首先在本地查看并复制公钥内容：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> ~/.ssh/id_ed25519.pub</span><br><span class="line"><span class="comment"># 复制输出的全部内容</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在远程服务器（node2）上执行：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建.ssh目录（如果不存在）</span></span><br><span class="line"><span class="built_in">mkdir</span> -p ~/.ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将公钥内容追加到authorized_keys文件</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;粘贴公钥内容&quot;</span> &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置正确的权限（非常重要！权限不对会导致密钥认证失败）</span></span><br><span class="line"><span class="built_in">chmod</span> 600 ~/.ssh/authorized_keys</span><br><span class="line"><span class="built_in">chmod</span> 700 ~/.ssh</span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<h4 id="步骤五：测试免密登录"><a href="#步骤五：测试免密登录" class="headerlink" title="步骤五：测试免密登录"></a>步骤五：测试免密登录</h4><p>配置完成后，测试是否可以免密登录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh ubuntu@192.168.56.103</span><br></pre></td></tr></table></figure>
+
+<p><strong>预期结果</strong>：无需输入密码，直接登录到远程服务器。</p>
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="/images/%E5%AE%9E%E9%AA%8C7/5.1.png" alt="alt text"></h2><h3 id="第三部分：文件传输"><a href="#第三部分：文件传输" class="headerlink" title="第三部分：文件传输"></a>第三部分：文件传输</h3><h4 id="步骤六：使用SCP传输文件"><a href="#步骤六：使用SCP传输文件" class="headerlink" title="步骤六：使用SCP传输文件"></a>步骤六：使用SCP传输文件</h4><p>SCP（Secure Copy）是基于SSH协议的文件传输工具，语法简单直观。</p>
+<p><strong>上传文件到远程服务器</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 上传单个文件</span></span><br><span class="line">scp /home/ubuntu/test.txt ubuntu@192.168.56.103:/home/ubuntu/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 上传整个目录（需要加 -r 参数）</span></span><br><span class="line">scp -r /home/ubuntu/project/ ubuntu@192.168.56.103:/home/ubuntu/</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/6.1.png" alt="alt text"><br><img src="/images/%E5%AE%9E%E9%AA%8C7/6.2.png" alt="alt text"></p>
+<p><strong>从远程服务器下载文件</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载单个文件</span></span><br><span class="line">scp ubuntu@192.168.56.103:/home/ubuntu/log.txt ./</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载整个目录</span></span><br><span class="line">scp -r ubuntu@192.168.56.103:/home/ubuntu/backup/ ./</span><br></pre></td></tr></table></figure>
+
+<h2 id="SCP常用参数：-r：递归复制目录-C：启用压缩传输"><a href="#SCP常用参数：-r：递归复制目录-C：启用压缩传输" class="headerlink" title="SCP常用参数：- -r：递归复制目录- -C：启用压缩传输"></a><strong>SCP常用参数</strong>：<br>- <code>-r</code>：递归复制目录<br>- <code>-C</code>：启用压缩传输<br><img src="/images/%E5%AE%9E%E9%AA%8C7/6.3.png" alt="alt text"></h2><h4 id="步骤七：使用rsync同步文件"><a href="#步骤七：使用rsync同步文件" class="headerlink" title="步骤七：使用rsync同步文件"></a>步骤七：使用rsync同步文件</h4><p>rsync是更强大的文件同步工具，支持增量传输，适合大量文件或定期备份场景。</p>
+<p><strong>安装rsync</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本地和远程都需要安装</span></span><br><span class="line"><span class="built_in">sudo</span> apt install rsync -y</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/7.1.png" alt="alt text"><br><strong>本地同步</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz /home/ubuntu/source/ /home/ubuntu/backup/</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/7.2.png" alt="alt text"><br><strong>推送到远程服务器</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz -e ssh /home/ubuntu/project/ ubuntu@192.168.56.103:/home/ubuntu/project/</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/7.3.png" alt="alt text"><br><strong>从远程服务器拉取</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz -e ssh ubuntu@192.168.56.103:/home/ubuntu/logs/ ./logs/</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/7.4.png" alt="alt text"><br><strong>保持完全一致（–delete会删除目标中多余的文件）</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --delete 会删除目标目录中源目录没有的文件</span></span><br><span class="line">rsync -avz --delete -e ssh /home/ubuntu/source/ ubuntu@192.168.56.103:/home/ubuntu/dest/</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/7.5.png" alt="alt text"><br><strong>排除特定文件</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz --exclude=<span class="string">&#x27;*.log&#x27;</span> --exclude=<span class="string">&#x27;tmp/&#x27;</span> -e ssh /home/ubuntu/ ubuntu@192.168.56.103:/home/ubuntu/</span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%AE%9E%E9%AA%8C7/7.6.png" alt="alt text"><br><strong>rsync常用参数说明</strong>：</p>
+<ul>
+<li><code>-a</code>：归档模式，保留权限、时间戳等属性</li>
+<li><code>-v</code>：详细输出，显示传输过程</li>
+<li><code>-z</code>：传输时压缩数据，节省带宽</li>
+<li><code>-e ssh</code>：指定使用SSH协议传输</li>
+<li><code>-- delete</code>：删除目标中多余的文件（谨慎使用）</li>
+<li><code>--exclude</code>：排除匹配的文件或目录</li>
+</ul>
+<hr>
+<h2 id="四、实验结果"><a href="#四、实验结果" class="headerlink" title="四、实验结果"></a>四、实验结果</h2><table>
+<thead>
+<tr>
+<th>测试项</th>
+<th>测试内容</th>
+<th>预期结果</th>
+<th>实际结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SSH服务状态</td>
+<td><code>systemctl status ssh</code></td>
+<td>服务运行中（active）</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>密码登录</td>
+<td><code>ssh ubuntu@192.168.56.103</code></td>
+<td>输入密码后成功登录</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>密钥生成</td>
+<td><code>ssh-keygen -t ed25519</code></td>
+<td>生成公私钥对</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>密钥认证登录</td>
+<td><code>ssh ubuntu@192.168.56.103</code></td>
+<td>免密登录成功</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>SCP文件传输</td>
+<td><code>scp file.txt ubuntu@node2:~/</code></td>
+<td>文件成功传输</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>rsync目录同步</td>
+<td><code>rsync -avz dir/ ubuntu@node2:~/dir/</code></td>
+<td>目录成功同步</td>
+<td>成功</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、知识总结"><a href="#五、知识总结" class="headerlink" title="五、知识总结"></a>五、知识总结</h2><h3 id="SSH配置文件关键参数"><a href="#SSH配置文件关键参数" class="headerlink" title="SSH配置文件关键参数"></a>SSH配置文件关键参数</h3><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PermitRootLogin</code></td>
+<td>是否允许root直接登录</td>
+<td><code>no</code></td>
+</tr>
+<tr>
+<td><code>PasswordAuthentication</code></td>
+<td>是否允许密码认证</td>
+<td><code>no</code>（启用密钥后）</td>
+</tr>
+<tr>
+<td><code>PubkeyAuthentication</code></td>
+<td>是否允许公钥认证</td>
+<td><code>yes</code></td>
+</tr>
+</tbody></table>
+<h3 id="文件传输工具选择"><a href="#文件传输工具选择" class="headerlink" title="文件传输工具选择"></a>文件传输工具选择</h3><ul>
+<li><strong>小文件、单次传输</strong>：使用 <code>scp</code>，简单快捷</li>
+<li><strong>大文件、目录同步</strong>：使用 <code>rsync</code>，高效增量</li>
+</ul>
+<h3 id="SSH密钥认证原理"><a href="#SSH密钥认证原理" class="headerlink" title="SSH密钥认证原理"></a>SSH密钥认证原理</h3><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>存储位置</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>私钥（id_ed25519）</td>
+<td>客户端 <code>~/.ssh/</code></td>
+<td>用户本地保管</td>
+</tr>
+<tr>
+<td>公钥（id_ed25519.pub）</td>
+<td>服务器 <code>~/.ssh/authorized_keys</code></td>
+<td>服务器验证客户端身份</td>
+</tr>
+</tbody></table>
+<p><strong>SCP vs rsync 对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>SCP</th>
+<th>rsync</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>增量传输</td>
+<td>❌ 全量复制</td>
+<td>✅ 只传输差异部分</td>
+</tr>
+<tr>
+<td>断点续传</td>
+<td>❌ 不支持</td>
+<td>✅ 支持</td>
+</tr>
+<tr>
+<td>目录同步</td>
+<td>❌ 简单复制</td>
+<td>✅ 可保持完全一致</td>
+</tr>
+<tr>
+<td>排除文件</td>
+<td>❌ 不支持</td>
+<td>✅ 支持丰富的排除规则</td>
+</tr>
+<tr>
+<td>使用复杂度</td>
+<td>简单</td>
+<td>功能多，稍复杂</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>少量文件快速传输</td>
+<td>大量文件、定期备份、目录同步</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="六、出现问题"><a href="#六、出现问题" class="headerlink" title="六、出现问题"></a>六、出现问题</h2><h3 id="问题一：公钥无法复制到远程服务器"><a href="#问题一：公钥无法复制到远程服务器" class="headerlink" title="问题一：公钥无法复制到远程服务器"></a>问题一：公钥无法复制到远程服务器</h3><p><strong>现象</strong>：输入 ssh-copy-id <a href="mailto:&#x75;&#x62;&#117;&#110;&#116;&#x75;&#64;&#x31;&#57;&#50;&#x2e;&#x31;&#54;&#56;&#x2e;&#53;&#54;&#x2e;&#49;&#48;&#x33;">&#x75;&#x62;&#117;&#110;&#116;&#x75;&#64;&#x31;&#57;&#50;&#x2e;&#x31;&#54;&#56;&#x2e;&#53;&#54;&#x2e;&#49;&#48;&#x33;</a> 后，报错无法连接。</p>
+<p><strong>原因</strong>：远程服务器node2静态IP地址未成功设置为192.168.56.103。</p>
+<p><strong>解决方案</strong>：回到node2中再次修改配置静态IP。</p>
+<hr>
+<h3 id="问题二：文件传输过程中显示文件不存在"><a href="#问题二：文件传输过程中显示文件不存在" class="headerlink" title="问题二：文件传输过程中显示文件不存在"></a>问题二：文件传输过程中显示文件不存在</h3><p><strong>现象</strong>：使用SCP传输文件后报错显示文件不存在。</p>
+<p><strong>原因</strong>：没有事先创建测试文件。</p>
+<p><strong>解决方案</strong>：执行 <code>mkdir /home/ubuntu/source</code>先创建测试文件。</p>
+<hr>
+<h2 id="七、心得体会"><a href="#七、心得体会" class="headerlink" title="七、心得体会"></a>七、心得体会</h2><h3 id="技术层面"><a href="#技术层面" class="headerlink" title="技术层面"></a>技术层面</h3><p>通过本次实验，我深入掌握了SSH远程管理的完整流程——从服务安装、端口配置、到密钥认证和文件传输。SSH作为Linux系统管理的核心工具，其基于非对称加密的认证机制让我对网络安全有了更直观的认识。密钥认证相比密码认证不仅更安全，也极大提升了日常运维的效率。</p>
+<h3 id="思政层面"><a href="#思政层面" class="headerlink" title="思政层面"></a>思政层面</h3><p>本次SSH实验的过程让我深刻体会到，遇到困难时不要害怕、不要退缩，勇于面对和坚持才是解决问题的关键。实验刚开始时，我在复制公钥到远程服务器这一步遇到了不少挫折——明明按照步骤与node2进行连接，但是一直不能成功。一开始我有些烦躁，觉得怎么这么简单的操作都做不对，甚至想干脆放弃等问问同学。但冷静下来后，我告诉自己不能怕麻烦、不能遇到困难就绕着走。于是我沉下心来，从node2的SSH服务状态、静态IP等等一项一项地排查，花了不少时间反复测试、反复修改，最终发现是node2静态IP地址不对的问题，最后成功实现了将公钥复制的远程服务器上。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/07/09/%E5%AE%9E%E9%AA%8C%E5%85%AD-Linux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" rel="prev" title="实验六 Linux环境配置">
+                  <i class="fa fa-angle-left"></i> 实验六 Linux环境配置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/07/09/%E5%AE%9E%E9%AA%8C%E5%85%AB-%E8%BD%AF%E4%BB%B6%E9%83%A8%E7%BD%B2/" rel="next" title="实验八 软件部署">
+                  实验八 软件部署 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">John Doe</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

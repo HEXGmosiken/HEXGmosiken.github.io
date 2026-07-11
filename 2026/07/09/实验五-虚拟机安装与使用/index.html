@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.28.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="报告人： 杨欣雨 25051503实验五：虚拟机安装与使用1. 实验目的本次实验旨在通过 Oracle VirtualBox 虚拟化软件，掌握虚拟机的安装、配置与使用方法。具体包括：在虚拟机中安装 Ubuntu Server 24.04 LTS 操作系统，配置 NAT 与仅主机（Host-Only）双网卡模式，设置静态 IP 地址，并通过克隆技术快速构建由多台虚拟机组成的虚拟化实验环境，最终验证虚">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实验五 虚拟机安装与使用">
+<meta property="og:url" content="http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%BA%94-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="报告人： 杨欣雨 25051503实验五：虚拟机安装与使用1. 实验目的本次实验旨在通过 Oracle VirtualBox 虚拟化软件，掌握虚拟机的安装、配置与使用方法。具体包括：在虚拟机中安装 Ubuntu Server 24.04 LTS 操作系统，配置 NAT 与仅主机（Host-Only）双网卡模式，设置静态 IP 地址，并通过克隆技术快速构建由多台虚拟机组成的虚拟化实验环境，最终验证虚">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20221042.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20234500.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20221235.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20225532.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20002548.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20002800.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20002854.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20033946.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20035542.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20041437.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20041841.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20044215.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20050535.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20050857.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20051102.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20044215.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20060233.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20060843.png">
+<meta property="og:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20063310.png">
+<meta property="article:published_time" content="2026-07-09T01:44:23.000Z">
+<meta property="article:modified_time" content="2026-07-10T01:50:38.994Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20221042.png">
+
+
+<link rel="canonical" href="http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%BA%94-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%BA%94-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/","path":"2026/07/09/实验五-虚拟机安装与使用/","title":"实验五 虚拟机安装与使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>实验五 虚拟机安装与使用 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%A5%E5%91%8A%E4%BA%BA%EF%BC%9A-%E6%9D%A8%E6%AC%A3%E9%9B%A8-25051503"><span class="nav-number">1.</span> <span class="nav-text">报告人： 杨欣雨 25051503</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number"></span> <span class="nav-text">实验五：虚拟机安装与使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%9E%E9%AA%8C%E7%9B%AE%E7%9A%84"><span class="nav-number"></span> <span class="nav-text">1. 实验目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="nav-number"></span> <span class="nav-text">2. 实验环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%9E%E9%AA%8C%E8%BF%87%E7%A8%8B"><span class="nav-number"></span> <span class="nav-text">3. 实验过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%80%EF%BC%9A%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%AE%89%E8%A3%85-VirtualBox"><span class="nav-number">1.</span> <span class="nav-text">步骤一：下载并安装 VirtualBox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%8C%EF%BC%9A%E4%B8%8B%E8%BD%BD-Ubuntu-Server-ISO-%E9%95%9C%E5%83%8F"><span class="nav-number">2.</span> <span class="nav-text">步骤二：下载 Ubuntu Server ISO 镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%89%EF%BC%9A%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E6%9C%BA%EF%BC%88%E6%A8%A1%E6%9D%BF%E6%9C%BA%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">步骤三：创建虚拟机（模板机）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%9B%9B%EF%BC%9A%E5%AE%89%E8%A3%85-Ubuntu-Server-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.</span> <span class="nav-text">步骤四：安装 Ubuntu Server 操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%94%EF%BC%9A%E9%85%8D%E7%BD%AE%E5%8F%8C%E7%BD%91%E5%8D%A1"><span class="nav-number">5.</span> <span class="nav-text">步骤五：配置双网卡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%85%AD%EF%BC%9A%E9%85%8D%E7%BD%AE%E9%9D%99%E6%80%81-IP-%E5%9C%B0%E5%9D%80"><span class="nav-number">6.</span> <span class="nav-text">步骤六：配置静态 IP 地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%85%AB%EF%BC%9A%E5%85%8B%E9%9A%86%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="nav-number">7.</span> <span class="nav-text">步骤八：克隆虚拟机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B9%9D%EF%BC%9A%E9%85%8D%E7%BD%AE%E5%85%8B%E9%9A%86%E6%9C%BA"><span class="nav-number">8.</span> <span class="nav-text">步骤九：配置克隆机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%8D%81%EF%BC%9A%E9%AA%8C%E8%AF%81%E7%BD%91%E7%BB%9C%E8%BF%9E%E9%80%9A%E6%80%A7"><span class="nav-number">9.</span> <span class="nav-text">步骤十：验证网络连通性</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/07/09/%E5%AE%9E%E9%AA%8C%E4%BA%94-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="实验五 虚拟机安装与使用 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          实验五 虚拟机安装与使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2026-07-09 09:44:23" itemprop="dateCreated datePublished" datetime="2026-07-09T09:44:23+08:00">2026-07-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2026-07-10 09:50:38" itemprop="dateModified" datetime="2026-07-10T09:50:38+08:00">2026-07-10</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="报告人：-杨欣雨-25051503"><a href="#报告人：-杨欣雨-25051503" class="headerlink" title="报告人： 杨欣雨 25051503"></a>报告人： 杨欣雨 25051503</h3><h1 id="实验五：虚拟机安装与使用"><a href="#实验五：虚拟机安装与使用" class="headerlink" title="实验五：虚拟机安装与使用"></a>实验五：虚拟机安装与使用</h1><h2 id="1-实验目的"><a href="#1-实验目的" class="headerlink" title="1. 实验目的"></a>1. 实验目的</h2><p>本次实验旨在通过 Oracle VirtualBox 虚拟化软件，掌握虚拟机的安装、配置与使用方法。具体包括：在虚拟机中安装 Ubuntu Server 24.04 LTS 操作系统，配置 NAT 与仅主机（Host-Only）双网卡模式，设置静态 IP 地址，并通过克隆技术快速构建由多台虚拟机组成的虚拟化实验环境，最终验证虚拟机之间的网络连通性。</p>
+<h2 id="2-实验环境"><a href="#2-实验环境" class="headerlink" title="2. 实验环境"></a>2. 实验环境</h2><table>
+<thead>
+<tr>
+<th align="left">项目</th>
+<th align="left">详细信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>宿主机操作系统</strong></td>
+<td align="left">Windows 11</td>
+</tr>
+<tr>
+<td align="left"><strong>虚拟化软件</strong></td>
+<td align="left">Oracle VirtualBox 7.0+</td>
+</tr>
+<tr>
+<td align="left"><strong>虚拟机操作系统</strong></td>
+<td align="left">Ubuntu Server 24.04.4 LTS</td>
+</tr>
+<tr>
+<td align="left"><strong>虚拟机内存</strong></td>
+<td align="left">2048 MB</td>
+</tr>
+<tr>
+<td align="left"><strong>虚拟机硬盘</strong></td>
+<td align="left">20 GB（动态分配）</td>
+</tr>
+<tr>
+<td align="left"><strong>虚拟机网络</strong></td>
+<td align="left">NAT + 仅主机（Host-Only）双网卡</td>
+</tr>
+<tr>
+<td align="left"><strong>IP 规划</strong></td>
+<td align="left">template: 192.168.56.101<br>node1: 192.168.56.102<br>node2: 192.168.56.103<br>node3: 192.168.56.104</td>
+</tr>
+</tbody></table>
+<h2 id="3-实验过程"><a href="#3-实验过程" class="headerlink" title="3. 实验过程"></a>3. 实验过程</h2><h3 id="步骤一：下载并安装-VirtualBox"><a href="#步骤一：下载并安装-VirtualBox" class="headerlink" title="步骤一：下载并安装 VirtualBox"></a>步骤一：下载并安装 VirtualBox</h3><p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20221042.png" alt="alt text"></p>
+<blockquote>
+<p><em>图：VirtualBox 下载页面</em><br>从 VirtualBox 官网下载 Windows 版本安装包，双击运行，按默认配置完成安装。安装完成后，打开 VirtualBox 主界面，确认界面显示正常。</p>
+</blockquote>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20234500.png" alt="alt text"></p>
+<p><em>图：VirtualBox 主界面</em></p>
+</blockquote>
+<h3 id="步骤二：下载-Ubuntu-Server-ISO-镜像"><a href="#步骤二：下载-Ubuntu-Server-ISO-镜像" class="headerlink" title="步骤二：下载 Ubuntu Server ISO 镜像"></a>步骤二：下载 Ubuntu Server ISO 镜像</h3><p>访问 Ubuntu 官网，下载 Ubuntu Server 24.04.4 LTS 的 ISO 镜像文件，保存至本地磁盘。</p>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20221235.png" alt="alt text"><br><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-09%20225532.png" alt="alt text"></p>
+<p><em>图：Ubuntu Server 24.04.4 LTS 下载页面</em></p>
+</blockquote>
+<h3 id="步骤三：创建虚拟机（模板机）"><a href="#步骤三：创建虚拟机（模板机）" class="headerlink" title="步骤三：创建虚拟机（模板机）"></a>步骤三：创建虚拟机（模板机）</h3><p>在 VirtualBox 中点击“新建”，配置如下参数：</p>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20002548.png" alt="alt text"></p>
+</blockquote>
+<ul>
+<li><strong>名称</strong>：<code>ubuntu-template</code></li>
+<li><strong>文件夹</strong>：<code>E:\VirtualMachines\ubuntu-template</code></li>
+<li><strong>ISO 映像</strong>：选择已下载的 Ubuntu Server 24.04.4 LTS ISO</li>
+<li><strong>类型</strong>：Linux，<strong>版本</strong>：Ubuntu (64-bit)<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20002800.png" alt="alt text"></p>
+</blockquote>
+</li>
+<li><strong>内存</strong>：2048 MB</li>
+<li><strong>硬盘</strong>：20 GB，动态分配，VDI 格式</li>
+</ul>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20002854.png" alt="alt text"></p>
+<p><em>图：虚拟机创建配置界面</em></p>
+</blockquote>
+<h3 id="步骤四：安装-Ubuntu-Server-操作系统"><a href="#步骤四：安装-Ubuntu-Server-操作系统" class="headerlink" title="步骤四：安装 Ubuntu Server 操作系统"></a>步骤四：安装 Ubuntu Server 操作系统</h3><p>启动虚拟机，按照以下步骤完成系统安装：</p>
+<ol>
+<li>选择语言：<code>English</code></li>
+<li>键盘布局：<code>English (US)</code></li>
+<li>网络配置：保持默认（DHCP）</li>
+<li>代理配置：留空</li>
+<li>软件源：保持默认<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20033946.png" alt="alt text"></p>
+</blockquote>
+</li>
+<li>存储配置：选择 <code>Use an entire disk</code></li>
+<li>确认分区方案后选择 <code>Continue</code><blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20035542.png" alt="alt text"></p>
+</blockquote>
+</li>
+<li>设置用户信息：<ul>
+<li>用户名：<code>vboxuser</code></li>
+<li>密码：<code>ABCD1234</code></li>
+</ul>
+</li>
+<li>选择安装 OpenSSH Server（按空格键选中）<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20041437.png" alt="alt text"></p>
+</blockquote>
+</li>
+<li>等待安装完成，选择 <code>Reboot Now</code></li>
+</ol>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20041841.png" alt="alt text"></p>
+<p><em>图：安装完成后登录界面</em></p>
+</blockquote>
+<h3 id="步骤五：配置双网卡"><a href="#步骤五：配置双网卡" class="headerlink" title="步骤五：配置双网卡"></a>步骤五：配置双网卡</h3><p>安装完成后，关闭虚拟机。在 VirtualBox 中右键 <code>ubuntu-template</code> → 设置 → 网络：</p>
+<ul>
+<li><strong>网卡1</strong>：启用，连接方式为 <code>NAT</code>（用于上网）</li>
+<li><strong>网卡2</strong>：启用，连接方式为 <code>仅主机（Host-Only）网络</code>（用于与宿主机及其他虚拟机通信）</li>
+</ul>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20044215.png" alt="alt text"></p>
+<p><em>图6：VirtualBox 双网卡具体信息</em></p>
+</blockquote>
+<h3 id="步骤六：配置静态-IP-地址"><a href="#步骤六：配置静态-IP-地址" class="headerlink" title="步骤六：配置静态 IP 地址"></a>步骤六：配置静态 IP 地址</h3><p>登录系统后，编辑 Netplan 配置文件，配置静态 IP 地址。</p>
+<p>执行以下命令打开配置文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nano /etc/netplan/50-cloud-init.yaml</span><br></pre></td></tr></table></figure>
+
+<p>输入密码后，将文件内容修改为：</p>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20050535.png" alt="alt text"></p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">network:</span></span><br><span class="line">  <span class="attr">version:</span> <span class="number">2</span></span><br><span class="line">  <span class="attr">ethernets:</span></span><br><span class="line">    <span class="attr">enp0s3:</span></span><br><span class="line">      <span class="attr">dhcp4:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">enp0s8:</span></span><br><span class="line">      <span class="attr">dhcp4:</span> <span class="literal">no</span></span><br><span class="line">      <span class="attr">addresses:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">192.168</span><span class="number">.56</span><span class="number">.101</span><span class="string">/24</span></span><br><span class="line">      <span class="attr">nameservers:</span></span><br><span class="line">        <span class="attr">addresses:</span> [<span class="number">8.8</span><span class="number">.8</span><span class="number">.8</span>, <span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span>]</span><br></pre></td></tr></table></figure>
+
+<p>保存退出（<code>Ctrl+O</code>，回车，<code>Ctrl+X</code>），然后执行以下命令应用配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> netplan apply</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20050857.png" alt="alt text"><br><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20051102.png" alt="alt text"></p>
+</blockquote>
+<p>验证配置是否生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip a</span><br></pre></td></tr></table></figure>
+
+<p>确认 <code>enp0s8</code> 网卡已获得 IP <code>192.168.56.101/24</code>。</p>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20044215.png" alt="alt text"></p>
+<p><em>图：静态 IP 配置成功验证</em></p>
+</blockquote>
+<h3 id="步骤八：克隆虚拟机"><a href="#步骤八：克隆虚拟机" class="headerlink" title="步骤八：克隆虚拟机"></a>步骤八：克隆虚拟机</h3><p>关闭模板机后，在 VirtualBox 中右键 <code>ubuntu-template</code> → 选择“复制”：</p>
+<ul>
+<li><strong>名称</strong>：<code>node1</code></li>
+<li><strong>路径</strong>：<code>E:\VirtualMachines\node1</code></li>
+<li><strong>克隆类型</strong>：<code>完全复制</code></li>
+<li><strong>MAC 地址策略</strong>：<code>为所有网卡重新生成 MAC 地址</code></li>
+</ul>
+<p>同样的方法复制出 <code>node2</code> 和 <code>node3</code>。</p>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20060233.png" alt="alt text"><br><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20060843.png" alt="alt text"></p>
+<p><em>图：VirtualBox 克隆配置界面</em></p>
+</blockquote>
+<h3 id="步骤九：配置克隆机"><a href="#步骤九：配置克隆机" class="headerlink" title="步骤九：配置克隆机"></a>步骤九：配置克隆机</h3><p>分别启动 <code>node1</code>、<code>node2</code>、<code>node3</code>，登录后修改静态 IP 地址和主机名：</p>
+<table>
+<thead>
+<tr>
+<th align="left">虚拟机</th>
+<th align="left">IP 地址</th>
+<th align="left">主机名</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">node1</td>
+<td align="left">192.168.56.102&#x2F;24</td>
+<td align="left">node1</td>
+</tr>
+<tr>
+<td align="left">node2</td>
+<td align="left">192.168.56.103&#x2F;24</td>
+<td align="left">node2</td>
+</tr>
+<tr>
+<td align="left">node3</td>
+<td align="left">192.168.56.104&#x2F;24</td>
+<td align="left">node3</td>
+</tr>
+</tbody></table>
+<p>修改主机名命令示例（对应 node2、node3 同理）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hostnamectl set-hostname node1</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后执行 <code>sudo netplan apply</code> 并重启虚拟机。</p>
+<h3 id="步骤十：验证网络连通性"><a href="#步骤十：验证网络连通性" class="headerlink" title="步骤十：验证网络连通性"></a>步骤十：验证网络连通性</h3><p>在 <code>node1</code> 上依次执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ping -c 3 8.8.8.8</span><br><span class="line">ping -c 3 node2</span><br><span class="line">ping -c 3 node3</span><br></pre></td></tr></table></figure>
+
+<p>所有 ping 测试均收到回复，说明虚拟机网络配置正确，多机实验环境搭建成功。</p>
+<blockquote>
+<p><img src="/../images/%E5%AE%9E%E9%AA%8C5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-07-10%20063310.png" alt="alt text"></p>
+<p><em>图：外网连通性测试成功,虚拟机之间连通性测试成功</em></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/07/09/%E5%AE%9E%E9%AA%8C%E5%9B%9B-Web%E7%AB%99%E7%82%B9%E6%9E%84%E5%BB%BA/" rel="prev" title="实验四 Web站点构建">
+                  <i class="fa fa-angle-left"></i> 实验四 Web站点构建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/07/09/%E5%AE%9E%E9%AA%8C%E5%85%AD-Linux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" rel="next" title="实验六 Linux环境配置">
+                  实验六 Linux环境配置 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">John Doe</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
